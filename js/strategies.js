@@ -61,9 +61,12 @@ class RandomMageStrategy extends MageStrategy {
     turn(state) {
         // TODO: implement throwing a Fireball spell from time to time
         let dir = [new Direction(-1, 0), new Direction(1, 0), new Direction(0, -1), new Direction(0, 1)];
+        let type = [ActionType.MOVE,ActionType.CAST];
+        //let spelldir = [new Direction(-1, 0), new Direction(1, 0), new Direction(0, -1), new Direction(0, 1)];
+        //надо сделать
         return {
             id: this.id,
-            type: ActionType.MOVE,
+            type: type[Math.floor(Math.random() * type.length)],
             dir: dir[Math.floor(Math.random() * dir.length)]
         }
     }
