@@ -3,12 +3,13 @@
 class State {
     // TODO: add spells to the state
 
-    constructor(mages) {        
-        this.mages = mages;     
+    constructor(mages,spells) {        
+        this.mages = mages; 
+        this.spells = spells;    
     }
 
     clone() {
-        return new State(cloneArray(this.mages));
+        return new State(cloneArray(this.mages),cloneArray(this.spells));
     }
 }
 

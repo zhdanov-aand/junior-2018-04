@@ -55,7 +55,7 @@ class FireballSpell {
 
     move() {
         // TODO: implement
-        if(plan[this.xy.add(this.dir).y][this.xy.add(this.dir).x==Cell.EMPTY]){
+        if(plan[this.xy.add(this.dir).y][this.xy.add(this.dir).x]==Cell.EMPTY){
             this.xy = this.xy.add(this.dir);
             this.action = { type: ActionType.MOVE, dir: dir }; 
         }
@@ -95,8 +95,14 @@ class Bottle {
     }
 
     drink() {
-        if (this.target==HEALTH) { mage.health += BOTTLE_HEALTH} 
-            else  if (this.target==MANA) { mage.mana += BOTTLE_MANA};
+        if (this.target==HEALTH) { 
+            if(mage.health>=50) {mage.health=MAGE_HEALTH}
+            else mage.health += BOTTLE_HEALTH
+        } 
+            else  if (this.target==MANA) {
+                if(mage.mana>=50) {mage.mana=MAGE_MANA}
+                 else mage.mana += BOTTLE_MANA
+                };
         this.action = { type: ActionType.APPLY, targetId: mage.id };        
     }
 }
