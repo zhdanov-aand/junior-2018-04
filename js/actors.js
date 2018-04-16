@@ -55,6 +55,10 @@ class FireballSpell {
 
     move() {
         // TODO: implement
+        if(plan[this.xy.add(this.dir).y][this.xy.add(this.dir).x==Cell.EMPTY]){
+            this.xy = this.xy.add(this.dir);
+            this.action = { type: ActionType.MOVE, dir: dir }; 
+        }
     }
 
     interact(cell) {
@@ -74,3 +78,25 @@ class FireballSpell {
 // TODO: implement class Bottle which can be a bottle of health or a bottle of mana
 // When a mage enters a cell with a bottle, he should drink it 
 // - i.e. his health/mana changes accordingly and the bottle disappears from the game
+
+class Bottle {
+    constructor(mageId, xy, target) {
+    
+        // constructor
+        this.mageId = mageId;
+        this.xy = xy;
+
+        //health or mana
+        this.target = target;
+
+        //надо показать bottle
+        this.action = { type: ActionType.NEW, targetId: mage.id }; 
+
+    }
+
+    drink() {
+        if (this.target==HEALTH) { mage.health += BOTTLE_HEALTH} 
+            else  if (this.target==MANA) { mage.mana += BOTTLE_MANA};
+        this.action = { type: ActionType.APPLY, targetId: mage.id };        
+    }
+}

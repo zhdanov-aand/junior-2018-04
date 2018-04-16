@@ -53,6 +53,13 @@ class HtmlLevel extends Level {
         // level spells
         for (let spell of state.spells) {            
             // TODO: implement creation and moving the spells
+
+            //как я понимаю здесь отображение заклинаний,т.к. выше отображение магов
+            //само создание и передвижение надо в файле game.js реализовать?
+            let spellDiv = HtmlLevel.createDiv(spell.xy, spell.type);
+            spellDiv.id = 'spell' + spell.id;            
+            planDiv.appendChild(spellDiv);
+
             if (spell.action.type == ActionType.GONE || spell.action.type == ActionType.APPLY) {
                 let spellDiv = document.getElementById('spell' + spell.id);
                 planDiv.removeChild(spellDiv);

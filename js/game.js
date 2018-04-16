@@ -38,7 +38,33 @@ class Game {
         let state = this.state.clone();
 
         // spells
-        // TODO: process spells     
+        // TODO: process spells 
+        for (let spell of state.spells) {
+            let act = getItemById(actions, spell.id);
+            if (!act) {
+                continue;
+            }
+            switch (act.type) {
+                case ActionType.MOVE:
+                    if (act.dir.validate()) {
+                        let xy = spell.xy.add(act.dir);
+                        let cell = this.level.getCell(state, xy);
+                        if (cell === Cell.EMPTY) {
+                            spell.move(act.dir);
+                        }
+                    }
+                    break;
+                case ActionType.NEW:  
+                    let spell = act.spell;                                     
+                    let cell = this.level.getCell(state, xy);                   
+                    if (cell === Cell.EMPTY) {
+                        spell.mageId = mage.id;                    
+                        spell.xy = mage.xy.add(spell.dir);
+                    }                    
+                    break;
+                
+            }
+        }    
 
         // mages
         for (let mage of state.mages) {
