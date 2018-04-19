@@ -1,8 +1,9 @@
 'use strict';
 
 class Mage {
-    constructor(id, color, xy, health = MAGE_HEALTH, mana = MAGE_MANA) {
+    constructor(id, teamId, color, xy, health = MAGE_HEALTH, mana = MAGE_MANA) {
         this.id = id;
+        this.teamId = teamId;
         this.color = color;
         this.xy = xy;
         this.health = health;
@@ -10,7 +11,7 @@ class Mage {
     }
 
     clone() {
-        let mage = new Mage(this.id, this.color, this.xy.clone(), this.health, this.mana);
+        let mage = new Mage(this.id, this.teamId, this.color, this.xy.clone(), this.health, this.mana);
         mage.action = this.action;
         return mage;
     }
@@ -24,12 +25,29 @@ class Mage {
         this.mana -= spell.cost;
         this.action = { type: ActionType.CAST, spell: spell };
     }
+
+    interact(cell, dir) {
+        if (cell instanceof Bottle) {
+            let bottle = cell;
+            this.move(dir);
+            bottle.action = { type: ActionType.APPLY };
+            if (bottle.type == HEALTH) {
+                this.health += bottle.value;
+            } else {
+                this.mana += bottle.value;
+            }
+        } else {
+            this.idle();
+        }
+    }
+
+    idle() {
+        this.action = { type: ActionType.IDLE };
+    }
 }
 
 class FireballSpell {
     constructor(mageId, xy, dir, id) {
-        let idCounter = 0;
-
         // constructor
         this.mageId = mageId;
         this.xy = xy;
@@ -55,10 +73,8 @@ class FireballSpell {
 
     move() {
         // TODO: implement
-        if(plan[this.xy.add(this.dir).y][this.xy.add(this.dir).x]==Cell.EMPTY){
-            this.xy = this.xy.add(this.dir);
-            this.action = { type: ActionType.MOVE, dir: dir }; 
-        }
+        this.xy = this.xy.add(this.dir);
+        this.action = { type: ActionType.MOVE };
     }
 
     interact(cell) {
@@ -66,12 +82,14 @@ class FireballSpell {
             this.action = { type: ActionType.GONE };
         } else if (cell instanceof Mage) {
             this.apply(cell);
+        } else {
+            this.move(cell.xy);
         }
     }
 
     apply(mage) {
         this.action = { type: ActionType.APPLY, targetId: mage.id };
-        mage.health -= this.power;        
+        mage.health -= this.power;
     }
 }
 
@@ -80,29 +98,21 @@ class FireballSpell {
 // - i.e. his health/mana changes accordingly and the bottle disappears from the game
 
 class Bottle {
-    constructor(mageId, xy, target) {
-    
-        // constructor
-        this.mageId = mageId;
+    constructor(type, value, xy, id) {
+        this.type = type;
+        this.value = value;
         this.xy = xy;
-
-        //health or mana
-        this.target = target;
-
-        //надо показать bottle
-        this.action = { type: ActionType.NEW, targetId: mage.id }; 
-
+        if (id) {
+            this.id = id;
+        } else {
+            this.id = ++idCounter;
+            this.action = { type: ActionType.NEW };
+        }
     }
 
-    drink() {
-        if (this.target==HEALTH) { 
-            if(mage.health>=50) {mage.health=MAGE_HEALTH}
-            else mage.health += BOTTLE_HEALTH
-        } 
-            else  if (this.target==MANA) {
-                if(mage.mana>=50) {mage.mana=MAGE_MANA}
-                 else mage.mana += BOTTLE_MANA
-                };
-        this.action = { type: ActionType.APPLY, targetId: mage.id };        
+    clone() {
+        let bottle = new Bottle(this.type, this.value, this.xy, this.id);
+        bottle.action = this.action;
+        return bottle;
     }
 }
